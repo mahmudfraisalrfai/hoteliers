@@ -27,12 +27,33 @@ export const HotelierAssistant: React.FC<HotelierAssistantProps> = ({ currentVie
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        chatContainerRef.current &&
+        !chatContainerRef.current.contains(event.target as Node) &&
+        toggleButtonRef.current &&
+        !toggleButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -97,7 +118,7 @@ export const HotelierAssistant: React.FC<HotelierAssistantProps> = ({ currentVie
   return (
     <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end">
       {isOpen && (
-        <div className="mb-6 w-[400px] h-[600px] glass-assistant rounded-[40px] shadow-4xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-500 border border-white/20">
+        <div ref={chatContainerRef} className="mb-6 w-[400px] h-[600px] glass-assistant rounded-[40px] shadow-4xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-8 fade-in duration-500 border border-white/20">
           <div className="p-8 bg-white/5 border-b border-white/10 flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-[#dec52d] rounded-2xl flex items-center justify-center shadow-lg animate-pulse-gold">
@@ -181,6 +202,7 @@ export const HotelierAssistant: React.FC<HotelierAssistantProps> = ({ currentVie
         <div className="absolute -inset-2 border border-[#dec52d]/20 rounded-full animate-rotate-slow"></div>
         
         <button 
+          ref={toggleButtonRef}
           onClick={() => setIsOpen(!isOpen)}
           className="relative w-20 h-20 bg-slate-950 rounded-full flex items-center justify-center shadow-2xl border border-white/10 group-hover:scale-110 transition-all duration-500 animate-float active:scale-90"
         >
