@@ -1,0 +1,7 @@
+{
+  "name": "Britrip | Hoteliers - Property Data Management",
+  "description": "The global standard for professional hotel data management, syndication, and AI-assisted profile optimization.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
