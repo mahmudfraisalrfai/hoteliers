@@ -114,9 +114,6 @@ export const ManagePropertyView: React.FC<ManagePropertyViewProps> = ({ data, on
           <button onClick={onViewAnalytics} className="px-8 py-4 bg-slate-100 text-slate-900 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all border border-slate-200">
             Analytics
           </button>
-          <button onClick={onEdit} className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-indigo-700 transition-all shadow-indigo-100">
-            Advanced Editor
-          </button>
         </div>
       </div>
 
@@ -167,6 +164,159 @@ export const ManagePropertyView: React.FC<ManagePropertyViewProps> = ({ data, on
             {data.amenities.map(a => <span key={a} className="px-3 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-black uppercase tracking-widest border border-indigo-100">{a}</span>)}
           </div>
         </div>
+      </Section>
+
+      {/* Rooms Section */}
+      <Section 
+        id="rooms"
+        title="Room Inventory" 
+        icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>}
+        editContent={
+          <div className="space-y-6">
+            {localData.rooms.map((room, index) => (
+              <div key={room.id || index} className="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                <div className="flex justify-between items-start">
+                  <h4 className="font-black text-slate-900">{room.name || `Room ${index + 1}`}</h4>
+                  <button 
+                    onClick={() => setLocalData({...localData, rooms: localData.rooms.filter((_, i) => i !== index)})}
+                    className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <Input label="Room Name" value={room.name} onChange={(v: string) => {
+                    const updated = [...localData.rooms];
+                    updated[index] = {...room, name: v};
+                    setLocalData({...localData, rooms: updated});
+                  }} />
+                  <Input label="Quantity" type="number" value={room.quantity} onChange={(v: string) => {
+                    const updated = [...localData.rooms];
+                    updated[index] = {...room, quantity: parseInt(v) || 1};
+                    setLocalData({...localData, rooms: updated});
+                  }} />
+                  <Input label="Max Guests" type="number" value={room.guests} onChange={(v: string) => {
+                    const updated = [...localData.rooms];
+                    updated[index] = {...room, guests: parseInt(v) || 2};
+                    setLocalData({...localData, rooms: updated});
+                  }} />
+                  <Input label="Price (AED)" type="number" value={room.basePrice} onChange={(v: string) => {
+                    const updated = [...localData.rooms];
+                    updated[index] = {...room, basePrice: parseFloat(v) || 0};
+                    setLocalData({...localData, rooms: updated});
+                  }} />
+                </div>
+              </div>
+            ))}
+            <button 
+              onClick={() => setLocalData({...localData, rooms: [...localData.rooms, {
+                id: `room-${Date.now()}`, type: 'Double Room', quantity: 1,
+                beds: { single: 0, double: 1, king: 0, superKing: 0 },
+                guests: 2, size: 25, sizeUnit: 'sqm', isSmokingAllowed: false,
+                isBathroomPrivate: true, bathroomAmenities: [],
+                generalAmenities: [], outdoorAmenities: [], foodAmenities: [],
+                name: 'New Room', basePrice: 200, commissionRate: 0.15,
+                plans: { standard: true, nonRefundable: false, weekly: false }
+              }]})}
+              className="w-full py-4 border-2 border-dashed border-slate-300 text-slate-500 rounded-xl font-bold text-sm hover:border-indigo-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all"
+            >
+              + Add New Room
+            </button>
+          </div>
+        }
+      >
+        {data.rooms.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-slate-400">
+            <p className="font-medium">No rooms configured yet</p>
+          </div>
+        ) : (
+          data.rooms.map((room, i) => (
+            <div key={i} className="bg-slate-50 p-4 rounded-xl">
+              <p className="font-bold text-slate-900">{room.name}</p>
+              <p className="text-sm text-slate-500">{room.quantity} units • {room.guests} guests • AED {room.basePrice}/night</p>
+            </div>
+          ))
+        )}
+      </Section>
+
+      {/* Photos Section */}
+      <Section 
+        id="photos"
+        title="Visual Assets" 
+        icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>}
+        editContent={
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {localData.photos.map((photo, index) => (
+                <div key={index} className="relative group">
+                  <img src={photo} alt={`Photo ${index + 1}`} className="w-full h-32 object-cover rounded-xl" />
+                  <button 
+                    onClick={() => setLocalData({...localData, photos: localData.photos.filter((_, i) => i !== index)})}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-slate-500 font-medium">To add new photos, use the Photos flow from the registration wizard.</p>
+          </div>
+        }
+      >
+        {data.photos.length === 0 ? (
+          <div className="col-span-full text-center py-8 text-slate-400">
+            <p className="font-medium">No photos uploaded yet</p>
+          </div>
+        ) : (
+          <div className="col-span-full">
+            <div className="grid grid-cols-4 gap-4">
+              {data.photos.slice(0, 4).map((photo, i) => (
+                <img key={i} src={photo} alt={`Photo ${i + 1}`} className="w-full h-24 object-cover rounded-xl" />
+              ))}
+            </div>
+            {data.photos.length > 4 && (
+              <p className="text-xs text-slate-500 font-medium mt-2">+{data.photos.length - 4} more photos</p>
+            )}
+          </div>
+        )}
+      </Section>
+
+      {/* Policies Section */}
+      <Section 
+        id="policies"
+        title="Policies & Rules" 
+        icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path></svg>}
+        editContent={
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input label="Check-in From" type="time" value={localData.checkInFrom} onChange={(v: string) => setLocalData({...localData, checkInFrom: v})} />
+            <Input label="Check-in To" type="time" value={localData.checkInTo} onChange={(v: string) => setLocalData({...localData, checkInTo: v})} />
+            <Input label="Check-out From" type="time" value={localData.checkOutFrom} onChange={(v: string) => setLocalData({...localData, checkOutFrom: v})} />
+            <Input label="Check-out To" type="time" value={localData.checkOutTo} onChange={(v: string) => setLocalData({...localData, checkOutTo: v})} />
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Children Allowed</label>
+              <select className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none bg-slate-50 text-slate-900 font-bold" 
+                      value={localData.allowChildren ? 'Yes' : 'No'} 
+                      onChange={(e) => setLocalData({...localData, allowChildren: e.target.value === 'Yes'})}>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Pets Allowed</label>
+              <select className="w-full p-3 border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none bg-slate-50 text-slate-900 font-bold" 
+                      value={localData.allowPets} 
+                      onChange={(e) => setLocalData({...localData, allowPets: e.target.value as any})}>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+              </select>
+            </div>
+          </div>
+        }
+      >
+        <InfoItem label="Check-in" value={`${data.checkInFrom} - ${data.checkInTo}`} />
+        <InfoItem label="Check-out" value={`${data.checkOutFrom} - ${data.checkOutTo}`} />
+        <InfoItem label="Children" value={data.allowChildren ? 'Allowed' : 'Not Allowed'} />
+        <InfoItem label="Pets" value={data.allowPets === 'No' ? 'Not Allowed' : 'Allowed'} />
       </Section>
     </div>
   );

@@ -106,6 +106,7 @@ export enum BasicInfoSubStep {
 }
 
 export enum RoomSubStep {
+  ROOM_LIST = 'ROOM_LIST',
   DETAILS = 'DETAILS',
   BATHROOM = 'BATHROOM',
   AMENITIES = 'AMENITIES',
